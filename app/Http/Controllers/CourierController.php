@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Courier;
 use Illuminate\Http\Request;
-
+use App\Models\Status;
 class CourierController extends Controller
 {
     /**
@@ -12,7 +12,8 @@ class CourierController extends Controller
      */
     public function index()
     {
-        //
+        $statuses = Status::all();
+        return view('couriers', compact('statuses'));
     }
 
     /**
@@ -20,7 +21,8 @@ class CourierController extends Controller
      */
     public function create()
     {
-        //
+        $statuses = Status::all();
+        return view('couriers', compact('statuses'));
     }
 
     /**
