@@ -2,6 +2,35 @@
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
 @section('content')
+<!-- NAVBAR -->
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo / Brand -->
+                <div class="flex-shrink-0">
+                    <a href="{{ route('couriers.index') }}" class="text-2xl font-bold text-white hover:text-yellow-400">
+                        Courier Management
+                    </a>
+                </div>
+                
+                <!-- Links -->
+                <div class="flex space-x-4 items-center">
+                    <a href="{{ route('couriers.index') }}" class="hover:bg-blue-500 px-3 py-2 rounded-md">Courier List</a>
+                    <a href="{{ route('couriers.create') }}" class="hover:bg-blue-500 px-3 py-2 rounded-md">Add Courier</a>
+
+                    <!-- Logout Form -->
+                    @auth
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="bg-yellow-400 hover:bg-yellow-300 text-black px-3 py-2 rounded-md">
+                                Logout
+                            </button>
+                        </form>
+                    @endauth
+                </div>
+            </div>
+        </div>
+    </nav>
 <div class="max-w-6xl mx-auto px-4 py-8">
     <div class="bg-white border border-blue-600 rounded-lg shadow-lg p-6">
         <h1 class="text-3xl font-bold text-center text-black mb-6">Courier List</h1>
