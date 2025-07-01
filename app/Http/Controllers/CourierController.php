@@ -3,35 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Models\Courier;
-use Illuminate\Http\Request;
 use App\Models\Status;
+use Illuminate\Http\Request;
+
 class CourierController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $statuses = Status::all();
-        return view('couriers', compact('statuses'));
+        $couriers = Courier::with('status')->get();
+        return view('couriers.index', compact('couriers'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $statuses = Status::all();
-        return view('couriers', compact('statuses'));
+        return view('couriers.form', ['statuses' => $statuses]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'tracking_number' => 'required|unique:couriers',
             'sender_name' => 'required',
             'receiver_name' => 'required',
             'origin' => 'required',
@@ -40,40 +31,50 @@ class CourierController extends Controller
             'delivery_date' => 'required|date',
         ]);
 
+        $validated['tracking_number'] = $this->generateTrackingNumber();
+
         Courier::create($validated);
 
-        return redirect()->route('couriers.index')->with('success', 'Courier Added!');
+        return redirect()->route('couriers.index')->with('success', 'Courier Created!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Courier $courier)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Courier $courier)
     {
-        //
+        $statuses = Status::all();
+        return view('couriers.form', compact('courier', 'statuses'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Courier $courier)
     {
-        //
+        $validated = $request->validate([
+            'sender_name' => 'required',
+            'receiver_name' => 'required',
+            'origin' => 'required',
+            'destination' => 'required',
+            'status_id' => 'required|exists:statuses,id',
+            'delivery_date' => 'required|date',
+        ]);
+
+        $courier->update($validated);
+
+        return redirect()->route('couriers.index')->with('success', 'Courier Updated!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Courier $courier)
     {
-        //
+        $courier->delete();
+        return redirect()->route('couriers.index')->with('success', 'Courier Deleted!');
+    }
+
+    private function generateTrackingNumber()
+    {
+        do {
+            $number = '';
+            for ($i = 0; $i < 16; $i++) {
+                $number .= mt_rand(0, 9);
+            }
+        } while (Courier::where('tracking_number', $number)->exists());
+
+        return $number;
     }
 }
